@@ -1,0 +1,17 @@
+{
+  "name": "ai-code-judge",
+  "version": "1.0.0",
+  "description": "AI-powered code review and auto-commit watcher",
+  "main": "auto-commit/watcher.js",
+  "scripts": {
+    "watch": "node auto-commit/watcher.js",
+    "watch:debug": "node --inspect auto-commit/watcher.js"
+  },
+  "keywords": ["ai", "code-review", "git", "watcher"],
+  "license": "MIT",
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "dotenv": "^16.4.5",
+    "axios": "^1.7.2"
+  }
+}

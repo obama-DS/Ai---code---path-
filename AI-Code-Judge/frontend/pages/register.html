@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register — AI Code Judge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+    .auth-box { width: 100%; max-width: 440px; }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .auth-logo .logo-icon {
+      width: 52px; height: 52px;
+      background: var(--accent);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 12px;
+      box-shadow: 0 0 24px var(--accent-glow);
+    }
+    .auth-logo h1 { font-size: 1.3rem; font-weight: 700; font-family: var(--font-mono); }
+    .auth-logo p  { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+    .auth-card h2 { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .auth-card .subtitle { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px; }
+    .auth-footer { text-align: center; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+    .input-icon-wrap { position: relative; }
+    .input-icon-wrap .form-input { padding-left: 38px; }
+    .input-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; pointer-events: none; }
+    .password-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 2px; transition: color var(--transition); }
+    .password-toggle:hover { color: var(--text-primary); }
+    .strength-meter { margin-top: 6px; }
+    .strength-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 4px; }
+    .strength-fill { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
+    .strength-label { font-size: 0.75rem; color: var(--text-muted); }
+    .form-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 5px; }
+    .terms-row { margin-bottom: 20px; }
+    .checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; line-height: 1.5; }
+    .checkbox-label input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; margin-top: 2px; }
+    #register-form .btn { width: 100%; justify-content: center; }
+    .name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="logo-icon">⚖</div>
+      <h1>AI Code Judge</h1>
+      <p>Create your free account</p>
+    </div>
+
+    <div class="auth-card">
+      <h2>Get started for free</h2>
+      <p class="subtitle">No credit card required</p>
+
+      <div id="register-error" class="alert alert-error hidden">
+        <span>⚠</span>
+        <span id="register-error-msg">Something went wrong.</span>
+      </div>
+
+      <form id="register-form" novalidate>
+        <div class="name-row">
+          <div class="form-group">
+            <label class="form-label" for="first-name">First Name</label>
+            <input type="text" id="first-name" name="first_name" class="form-input" placeholder="Alex" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="last-name">Last Name</label>
+            <input type="text" id="last-name" name="last_name" class="form-input" placeholder="Dev" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">@</span>
+            <input type="text" id="username" name="username" class="form-input" placeholder="alexdev" autocomplete="username" required />
+          </div>
+          <p class="form-hint">Used in your profile and history.</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">✉</span>
+            <input type="email" id="email" name="email" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="password" name="password" class="form-input" placeholder="Min 8 characters" autocomplete="new-password" required />
+            <button type="button" class="password-toggle" id="pwd-toggle">👁</button>
+          </div>
+          <div class="strength-meter">
+            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+            <span class="strength-label" id="strength-label">Enter a password</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirm-password">Confirm Password</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input type="password" id="confirm-password" name="confirm_password" class="form-input" placeholder="Repeat password" autocomplete="new-password" required />
+          </div>
+        </div>
+
+        <div class="terms-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="terms" required />
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" id="register-btn">
+          Create Account
+        </button>
+      </form>
+    </div>
+
+    <p class="auth-footer">
+      Already have an account? <a href="login.html">Sign in</a>
+    </p>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="../js/main.js"></script>
+  <script src="../js/auth.js"></script>
+</body>
+</html>

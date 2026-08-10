@@ -1,0 +1,381 @@
+/* =============================================
+   AI CODE JUDGE — Judge Page Styles
+   ============================================= */
+
+/* --- Page Layout --- */
+.judge-page {
+  padding: 32px 0 60px;
+}
+
+.judge-header {
+  margin-bottom: 32px;
+}
+
+.judge-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  margin-bottom: 6px;
+}
+
+.judge-header h1 span { color: var(--accent); }
+
+.judge-header p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* --- Two-column layout --- */
+.judge-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .judge-layout { grid-template-columns: 1fr; }
+}
+
+/* --- Editor Panel --- */
+.editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.editor-toolbar {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editor-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.editor-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.editor-dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.editor-dots .dot-red    { background: #ff5f57; }
+.editor-dots .dot-yellow { background: #febc2e; }
+.editor-dots .dot-green  { background: #28c840; }
+
+.editor-filename {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.editor-toolbar select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 5px 28px 5px 10px;
+  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%238888aa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  outline: none;
+}
+
+.editor-toolbar select:focus {
+  border-color: var(--border-focus);
+}
+
+/* Monaco container */
+#monaco-container {
+  height: 460px;
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom: none;
+  overflow: hidden;
+}
+
+/* Fallback textarea (shown when Monaco fails to load) */
+#code-textarea {
+  height: 460px;
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-bottom: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  padding: 16px;
+  resize: none;
+  outline: none;
+  tab-size: 4;
+}
+
+#code-textarea:focus {
+  border-color: var(--border-focus);
+}
+
+.editor-footer {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.editor-footer-info {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 20px;
+}
+
+/* --- Judge Button --- */
+.judge-btn-wrap {
+  margin-top: 16px;
+}
+
+.btn-judge {
+  width: 100%;
+  justify-content: center;
+  padding: 15px;
+  font-size: 1.05rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--accent), #a78bfa);
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: 0 0 32px var(--accent-glow), 0 4px 16px rgba(0,0,0,0.3);
+  transition: all var(--transition);
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.btn-judge:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 0 48px var(--accent-glow), 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.btn-judge:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-judge .spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+}
+
+/* --- Right Panel --- */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Personality selector */
+.personality-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.personality-card {
+  background: var(--bg-input);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-align: center;
+}
+
+.personality-card:hover {
+  border-color: var(--text-muted);
+  background: var(--bg-card);
+}
+
+.personality-card.selected {
+  border-color: var(--accent);
+  background: rgba(108,99,255,0.1);
+}
+
+.personality-card .p-icon { font-size: 1.4rem; margin-bottom: 4px; }
+.personality-card .p-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.personality-card .p-desc {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* --- Results Panel --- */
+#results-panel {
+  display: none;
+}
+
+#results-panel.visible {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Verdict card */
+.verdict-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+}
+
+.verdict-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.verdict-text {
+  font-style: italic;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-left: 2px solid var(--accent);
+  padding-left: 12px;
+  text-align: left;
+  margin-top: 16px;
+}
+
+/* Score breakdown */
+.breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Issues list */
+.issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.issue-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 0.85rem;
+}
+
+.issue-item.severity-high    { border-left-color: var(--red); }
+.issue-item.severity-medium  { border-left-color: var(--yellow); }
+.issue-item.severity-low     { border-left-color: var(--blue); }
+.issue-item.severity-info    { border-left-color: var(--text-muted); }
+
+.issue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.issue-title {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.83rem;
+}
+
+.issue-body {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.issue-line {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* Suggestions */
+.suggestion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.suggestion-item {
+  display: flex;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.suggestion-item::before {
+  content: '→';
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  gap: 12px;
+}
+
+.empty-state .empty-icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* Placeholder panel */
+#placeholder-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}

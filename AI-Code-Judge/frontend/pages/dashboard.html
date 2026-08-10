@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — AI Code Judge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="page-wrapper">
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="navbar-brand">
+        <div class="brand-icon">⚖</div>
+        AI Code Judge
+      </a>
+      <ul class="navbar-nav">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="judge.html">Judge</a></li>
+        <li><a href="dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="history.html">History</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="login.html" class="btn btn-secondary btn-sm">Login</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dashboard-page">
+    <div class="container">
+
+      <!-- Header -->
+      <div class="dashboard-header">
+        <div>
+          <h1>📊 Your Dashboard</h1>
+          <p>Track your coding quality and improvement over time.</p>
+        </div>
+        <a href="judge.html" class="btn btn-primary">⚖ Judge Code</a>
+      </div>
+
+      <!-- Improvement banner -->
+      <div class="improvement-banner" id="improvement-banner">
+        <div class="ib-text">
+          <h3>🚀 Keep it up!</h3>
+          <p id="banner-msg">Run your first judgment to start tracking progress.</p>
+        </div>
+        <div class="ib-score" id="banner-score">—</div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">📋 Total Judgments</div>
+          <div class="stat-value text-accent" id="stat-total">0</div>
+          <div class="stat-change" id="stat-total-change">No judgments yet</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">📈 Average Score</div>
+          <div class="stat-value" id="stat-avg">—</div>
+          <div class="stat-change" id="stat-avg-change">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">🏆 Best Score</div>
+          <div class="stat-value text-green" id="stat-best">—</div>
+          <div class="stat-change" id="stat-best-lang">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">💀 Worst Score</div>
+          <div class="stat-value text-red" id="stat-worst">—</div>
+          <div class="stat-change" id="stat-worst-lang">—</div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="dashboard-main">
+
+        <!-- Left column -->
+        <div>
+          <!-- Score over time chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">Score Over Time</span>
+              <div class="chart-tabs">
+                <button class="chart-tab active" data-range="7">7d</button>
+                <button class="chart-tab" data-range="30">30d</button>
+                <button class="chart-tab" data-range="all">All</button>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="score-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Category averages chart -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <span class="chart-title">Category Averages</span>
+            </div>
+            <div class="chart-wrapper" style="height:180px;">
+              <canvas id="category-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Recent history -->
+          <div class="card" style="margin-top:0;">
+            <div class="card-header">
+              <span class="card-title">🕐 Recent Judgments</span>
+              <a href="history.html" class="btn btn-ghost btn-sm">View all →</a>
+            </div>
+            <div class="history-feed" id="recent-history">
+              <div class="empty-state" style="padding:32px 16px;">
+                <div class="empty-icon">📋</div>
+                <p>No judgments yet. <a href="judge.html">Judge your first file</a>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+
+          <!-- Language breakdown -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🌐 Languages</span>
+            </div>
+            <div class="lang-list" id="lang-list">
+              <p class="text-muted" style="font-size:0.85rem;">No data yet.</p>
+            </div>
+          </div>
+
+          <!-- Most common problems -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">⚠ Common Problems</span>
+            </div>
+            <div class="problem-list" id="problem-list">
+              <p class="text-muted" style="font-size:0.85rem;">No data yet.</p>
+            </div>
+          </div>
+
+          <!-- Quick stats -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🔍 Insights</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;" id="insights-list">
+              <div class="insight-row" style="display:flex;justify-content:space-between;font-size:0.85rem;">
+                <span class="text-muted">Favorite Language</span>
+                <span id="insight-lang" class="mono" style="color:var(--text-primary);">—</span>
+              </div>
+              <div class="insight-row" style="display:flex;justify-content:space-between;font-size:0.85rem;">
+                <span class="text-muted">Security Issues Found</span>
+                <span id="insight-security" class="mono text-red">0</span>
+              </div>
+              <div class="insight-row" style="display:flex;justify-content:space-between;font-size:0.85rem;">
+                <span class="text-muted">Total Bugs Flagged</span>
+                <span id="insight-bugs" class="mono text-yellow">0</span>
+              </div>
+              <div class="insight-row" style="display:flex;justify-content:space-between;font-size:0.85rem;">
+                <span class="text-muted">Suggestions Given</span>
+                <span id="insight-suggestions" class="mono text-accent">0</span>
+              </div>
+              <div class="insight-row" style="display:flex;justify-content:space-between;font-size:0.85rem;">
+                <span class="text-muted">Score Trend</span>
+                <span id="insight-trend" class="mono">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity heatmap -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">📅 Activity (13 weeks)</span>
+            </div>
+            <div class="heatmap-grid" id="heatmap-grid"></div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:10px;font-size:0.72rem;color:var(--text-muted);">
+              <span>Less</span>
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--border);"></div>
+              <div style="width:10px;height:10px;border-radius:2px;background:rgba(108,99,255,0.25);"></div>
+              <div style="width:10px;height:10px;border-radius:2px;background:rgba(108,99,255,0.5);"></div>
+              <div style="width:10px;height:10px;border-radius:2px;background:var(--accent);"></div>
+              <span>More</span>
+            </div>
+          </div>
+
+        </div>
+        <!-- /sidebar -->
+      </div>
+      <!-- /dashboard-main -->
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">AI Code Judge — built to make you a better developer</div>
+  </footer>
+
+  <div id="toast-container"></div>
+  <script src="../js/main.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

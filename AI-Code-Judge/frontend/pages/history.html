@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>History — AI Code Judge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .history-page { padding: 32px 0 60px; }
+
+    .history-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .history-header h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 4px; }
+    .history-header p  { color: var(--text-secondary); font-size: 0.875rem; }
+
+    /* Filters */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .filter-bar .form-input,
+    .filter-bar .form-select {
+      width: auto;
+    }
+    .filter-bar .form-input  { min-width: 220px; }
+    .filter-bar .form-select { min-width: 140px; }
+    .filter-info {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* History table */
+    .history-table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .history-table thead tr {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .history-table th {
+      padding: 12px 16px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .history-table th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+    .history-table th.sortable:hover { color: var(--text-primary); }
+    .history-table th .sort-icon { margin-left: 4px; opacity: 0.4; }
+    .history-table th.sort-asc  .sort-icon,
+    .history-table th.sort-desc .sort-icon { opacity: 1; color: var(--accent); }
+
+    .history-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+      cursor: pointer;
+    }
+    .history-table tbody tr:last-child { border-bottom: none; }
+    .history-table tbody tr:hover { background: rgba(108,99,255,0.05); }
+
+    .history-table td {
+      padding: 14px 16px;
+      font-size: 0.875rem;
+      vertical-align: middle;
+    }
+
+    .td-file {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .file-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--bg-input);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .file-name {
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .file-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .score-cell {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    .score-cell.high   { color: var(--green); }
+    .score-cell.mid    { color: var(--yellow); }
+    .score-cell.low    { color: var(--red); }
+
+    .delta-cell {
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      font-weight: 600;
+    }
+    .delta-cell.up   { color: var(--green); }
+    .delta-cell.down { color: var(--red); }
+    .delta-cell.same { color: var(--text-muted); }
+
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 20px 0 4px;
+    }
+    .page-btn {
+      width: 34px; height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition);
+      font-family: var(--font-sans);
+    }
+    .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .page-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* Detail modal */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 700px;
+      max-height: 88vh;
+      overflow-y: auto;
+      transform: translateY(16px);
+      transition: transform 0.25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0;
+      background: var(--bg-card);
+      z-index: 1;
+    }
+    .modal-header h3 { font-size: 1rem; font-weight: 700; font-family: var(--font-mono); }
+    .modal-close {
+      background: none; border: none;
+      color: var(--text-muted); font-size: 1.3rem;
+      cursor: pointer; padding: 4px; line-height: 1;
+      transition: color var(--transition);
+    }
+    .modal-close:hover { color: var(--text-primary); }
+
+    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+    .modal-score-row {
+      display: flex; align-items: center; gap: 20px;
+      padding: 16px;
+      background: var(--bg-input);
+      border-radius: var(--radius);
+    }
+
+    .modal-code-block {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      max-height: 220px;
+      overflow-y: auto;
+      white-space: pre;
+    }
+
+    .modal-section-title {
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .compare-banner {
+      background: rgba(108,99,255,0.08);
+      border: 1px solid rgba(108,99,255,0.25);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      font-size: 0.875rem;
+    }
+    .compare-banner span { color: var(--text-secondary); }
+    .compare-banner strong { color: var(--text-primary); }
+  </style>
+</head>
+<body class="page-wrapper">
+
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="navbar-brand">
+        <div class="brand-icon">⚖</div>
+        AI Code Judge
+      </a>
+      <ul class="navbar-nav">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="judge.html">Judge</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="history.html" class="active">History</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="login.html" class="btn btn-secondary btn-sm">Login</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="history-page">
+    <div class="container">
+
+      <div class="history-header">
+        <div>
+          <h1>📜 Code History</h1>
+          <p>Every judgment you've ever made — searchable and sortable.</p>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-secondary btn-sm" id="compare-btn" disabled>⚖ Compare Selected</button>
+          <a href="judge.html" class="btn btn-primary btn-sm">+ New Judgment</a>
+        </div>
+      </div>
+
+      <!-- Compare banner (shown when 2 items selected) -->
+      <div class="compare-banner hidden" id="compare-banner">
+        <span>📊 <strong id="compare-a-name">—</strong> vs <strong id="compare-b-name">—</strong></span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="do-compare-btn">Compare Now →</button>
+          <button class="btn btn-secondary btn-sm" id="cancel-compare-btn">✕ Cancel</button>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="filter-bar">
+        <input type="text" class="form-input" id="search-input" placeholder="🔍  Search files..." />
+        <select class="form-select" id="lang-filter">
+          <option value="">All Languages</option>
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="java">Java</option>
+          <option value="cpp">C++</option>
+          <option value="csharp">C#</option>
+          <option value="go">Go</option>
+        </select>
+        <select class="form-select" id="score-filter">
+          <option value="">All Scores</option>
+          <option value="high">High (80+)</option>
+          <option value="mid">Medium (50–79)</option>
+          <option value="low">Low (&lt;50)</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" id="clear-filters-btn">✕ Clear</button>
+        <span class="filter-info" id="filter-info">Showing 0 results</span>
+      </div>
+
+      <!-- Table -->
+      <div class="history-table-wrap">
+        <table class="history-table" id="history-table">
+          <thead>
+            <tr>
+              <th style="width:32px;"><input type="checkbox" id="select-all" aria-label="Select all" /></th>
+              <th class="sortable" data-col="file">File <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="language">Language <span class="sort-icon">↕</span></th>
+              <th class="sortable sort-desc" data-col="score">Score <span class="sort-icon">↓</span></th>
+              <th class="sortable" data-col="delta">Change <span class="sort-icon">↕</span></th>
+              <th class="sortable" data-col="date">Date <span class="sort-icon">↕</span></th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <!-- Populated by JS -->
+          </tbody>
+        </table>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="history-empty" style="padding:56px 24px;">
+          <div class="empty-icon">📋</div>
+          <p>No judgments found. <a href="judge.html">Run your first one</a>.</p>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination" id="pagination"></div>
+
+    </div>
+  </main>
+
+  <!-- Detail modal -->
+  <div class="modal-overlay" id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-title">Judgment Detail</h3>
+        <button class="modal-close" id="modal-close" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Score row -->
+        <div class="modal-score-row">
+          <div style="text-align:center;">
+            <div style="font-family:var(--font-mono);font-size:2.4rem;font-weight:700;" id="modal-score">—</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);">/ 100</div>
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:600;font-size:0.95rem;" id="modal-file">—</div>
+            <div style="font-size:0.8rem;color:var(--text-muted);margin-top:3px;" id="modal-meta">—</div>
+            <div style="margin-top:8px;" id="modal-verdict-short"></div>
+          </div>
+        </div>
+
+        <!-- Breakdown bars -->
+        <div>
+          <div class="modal-section-title">Score Breakdown</div>
+          <div id="modal-breakdown" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+
+        <!-- Verdict -->
+        <div>
+          <div class="modal-section-title">AI Verdict</div>
+          <p id="modal-verdict" style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-style:italic;border-left:2px solid var(--accent);padding-left:12px;"></p>
+        </div>
+
+        <!-- Issues -->
+        <div id="modal-issues-wrap">
+          <div class="modal-section-title">Issues</div>
+          <div id="modal-issues" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+
+        <!-- Suggestions -->
+        <div id="modal-suggestions-wrap">
+          <div class="modal-section-title">Suggestions</div>
+          <div id="modal-suggestions" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+
+        <!-- Code snapshot -->
+        <div>
+          <div class="modal-section-title">Code Snapshot</div>
+          <div class="modal-code-block" id="modal-code">No code stored.</div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" id="modal-rejudge-btn">⚖ Re-judge this code</button>
+          <button class="btn btn-secondary btn-sm" id="modal-delete-btn">🗑 Delete</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Compare modal -->
+  <div class="modal-overlay" id="compare-modal" role="dialog" aria-modal="true" aria-labelledby="compare-modal-title">
+    <div class="modal" style="max-width:860px;">
+      <div class="modal-header">
+        <h3 id="compare-modal-title">Version Comparison</h3>
+        <button class="modal-close" id="compare-modal-close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;" id="compare-body">
+          <!-- Populated by JS -->
+        </div>
+        <div id="compare-summary" style="margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">AI Code Judge — built to make you a better developer</div>
+  </footer>
+
+  <div id="toast-container"></div>
+  <script src="../js/main.js"></script>
+  <script src="../js/history.js"></script>
+</body>
+</html>

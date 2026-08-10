@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Judge My Code — AI Code Judge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/judge.css" />
+</head>
+<body class="page-wrapper">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container">
+      <a href="../index.html" class="navbar-brand">
+        <div class="brand-icon">⚖</div>
+        AI Code Judge
+      </a>
+      <ul class="navbar-nav">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="judge.html" class="active">Judge</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="history.html">History</a></li>
+      </ul>
+      <div class="navbar-actions">
+        <a href="login.html" class="btn btn-secondary btn-sm">Login</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="judge-page">
+    <div class="container">
+
+      <!-- Header -->
+      <div class="judge-header">
+        <h1>⚖ <span>Judge</span> My Code</h1>
+        <p>Paste your code below, pick a personality, and get an AI verdict in seconds.</p>
+      </div>
+
+      <div class="judge-layout">
+
+        <!-- Left: Editor -->
+        <div class="editor-panel">
+
+          <!-- Toolbar -->
+          <div class="editor-toolbar">
+            <div class="editor-toolbar-left">
+              <div class="editor-dots">
+                <span class="dot-red"></span>
+                <span class="dot-yellow"></span>
+                <span class="dot-green"></span>
+              </div>
+              <span class="editor-filename" id="editor-filename">untitled.py</span>
+            </div>
+            <select id="language-select" aria-label="Select language">
+              <option value="python">🐍 Python</option>
+              <option value="javascript">🟨 JavaScript</option>
+              <option value="typescript">🔷 TypeScript</option>
+              <option value="java">☕ Java</option>
+              <option value="cpp">⚙ C++</option>
+              <option value="csharp">🔵 C#</option>
+              <option value="go">🐹 Go</option>
+              <option value="rust">🦀 Rust</option>
+              <option value="php">🐘 PHP</option>
+              <option value="ruby">💎 Ruby</option>
+            </select>
+          </div>
+
+          <!-- Monaco Editor container -->
+          <div id="monaco-container" aria-label="Code editor"></div>
+
+          <!-- Fallback textarea -->
+          <textarea
+            id="code-textarea"
+            class="hidden"
+            placeholder="# Paste your code here..."
+            spellcheck="false"
+            aria-label="Code input"
+          ></textarea>
+
+          <!-- Editor footer -->
+          <div class="editor-footer">
+            <div class="editor-footer-info">
+              <span id="line-count">0 lines</span>
+              <span id="char-count">0 chars</span>
+              <span id="lang-display">Python</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="clear-btn" title="Clear editor">✕ Clear</button>
+          </div>
+
+          <!-- Judge button -->
+          <div class="judge-btn-wrap">
+            <button class="btn-judge" id="judge-btn" type="button">
+              <span id="judge-btn-text">⚖ JUDGE MY CODE</span>
+              <div class="spinner hidden" id="judge-spinner"></div>
+            </button>
+          </div>
+
+          <!-- Validation error -->
+          <div id="judge-error" class="alert alert-error hidden mt-16">
+            <span>⚠</span>
+            <span id="judge-error-msg"></span>
+          </div>
+        </div>
+
+        <!-- Right: Config + Results -->
+        <div class="right-panel">
+
+          <!-- Personality selector -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">🎭 Judge Personality</span>
+            </div>
+            <div class="personality-grid" id="personality-grid">
+              <div class="personality-card selected" data-personality="friendly" tabindex="0" role="button" aria-pressed="true">
+                <div class="p-icon">😊</div>
+                <div class="p-name">Friendly</div>
+                <div class="p-desc">Encouraging & supportive</div>
+              </div>
+              <div class="personality-card" data-personality="professional" tabindex="0" role="button" aria-pressed="false">
+                <div class="p-icon">👔</div>
+                <div class="p-name">Professional</div>
+                <div class="p-desc">Formal & precise</div>
+              </div>
+              <div class="personality-card" data-personality="brutal" tabindex="0" role="button" aria-pressed="false">
+                <div class="p-icon">💀</div>
+                <div class="p-name">Brutal</div>
+                <div class="p-desc">Blunt & merciless</div>
+              </div>
+              <div class="personality-card" data-personality="hacker" tabindex="0" role="button" aria-pressed="false">
+                <div class="p-icon">🖥</div>
+                <div class="p-name">Hacker</div>
+                <div class="p-desc">Technical & cryptic</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Placeholder (shown before judging) -->
+          <div id="placeholder-panel" class="card">
+            <div class="empty-state">
+              <div class="empty-icon">⚖</div>
+              <p>Your results will appear here after you click <strong>Judge My Code</strong>.</p>
+            </div>
+          </div>
+
+          <!-- Results (hidden until judging) -->
+          <div id="results-panel">
+
+            <!-- Verdict card -->
+            <div class="card verdict-card">
+              <div class="verdict-score-row">
+                <div class="score-ring" id="score-ring" aria-label="Overall score">
+                  <svg viewBox="0 0 120 120">
+                    <circle class="track" cx="60" cy="60" r="52" />
+                    <circle class="fill" id="score-ring-fill" cx="60" cy="60" r="52"
+                      stroke-dasharray="326.7"
+                      stroke-dashoffset="326.7" />
+                  </svg>
+                  <div class="value">
+                    <span class="num" id="score-num">—</span>
+                    <span class="denom">/100</span>
+                  </div>
+                </div>
+                <div>
+                  <div style="font-size:1.1rem;font-weight:700;" id="score-label">Waiting...</div>
+                  <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;" id="score-sublabel"></div>
+                  <div style="margin-top:10px;" id="score-change-wrap"></div>
+                </div>
+              </div>
+              <p class="verdict-text" id="verdict-text"></p>
+            </div>
+
+            <!-- Score breakdown -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">📊 Score Breakdown</span>
+              </div>
+              <div class="breakdown-list" id="breakdown-list"></div>
+            </div>
+
+            <!-- Bugs & Issues -->
+            <div class="card" id="issues-card">
+              <div class="card-header">
+                <span class="card-title">🐛 Issues Found</span>
+                <span class="badge badge-red" id="issues-count-badge">0</span>
+              </div>
+              <div class="issues-list" id="issues-list">
+                <p class="text-muted" style="font-size:0.85rem">No issues detected. Nice work!</p>
+              </div>
+            </div>
+
+            <!-- Security -->
+            <div class="card" id="security-card">
+              <div class="card-header">
+                <span class="card-title">🔒 Security</span>
+                <span class="badge badge-green" id="security-badge">Clean</span>
+              </div>
+              <div class="issues-list" id="security-list">
+                <p class="text-muted" style="font-size:0.85rem">No security issues found.</p>
+              </div>
+            </div>
+
+            <!-- Suggestions -->
+            <div class="card">
+              <div class="card-header">
+                <span class="card-title">💡 Suggestions</span>
+              </div>
+              <div class="suggestion-list" id="suggestion-list">
+                <p class="text-muted" style="font-size:0.85rem">No suggestions available.</p>
+              </div>
+            </div>
+
+            <!-- Save button -->
+            <button class="btn btn-primary" id="save-result-btn" style="width:100%;justify-content:center;padding:12px;">
+              💾 Save to History
+            </button>
+          </div>
+          <!-- /results-panel -->
+
+        </div>
+        <!-- /right-panel -->
+      </div>
+      <!-- /judge-layout -->
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">AI Code Judge — built to make you a better developer</div>
+  </footer>
+
+  <div id="toast-container"></div>
+
+  <!-- Monaco Editor (CDN) -->
+  <script>
+    // Attempt to load Monaco from CDN; fall back to textarea if blocked
+    window.MonacoLoadFailed = false;
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.46.0/min/vs/loader.js"
+    onerror="window.MonacoLoadFailed=true;document.getElementById('monaco-container').classList.add('hidden');document.getElementById('code-textarea').classList.remove('hidden');">
+  </script>
+
+  <script src="../js/main.js"></script>
+  <script src="../js/judge.js"></script>
+</body>
+</html>
