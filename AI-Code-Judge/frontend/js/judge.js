@@ -185,7 +185,7 @@ async function runJudge() {
     });
 
   } catch (err) {
-    showJudgeError(`API error: ${err.message}. Make sure the backend is running.`);
+    showJudgeError(err.message || 'Something went wrong while judging. Please try again.');
   } finally {
     setJudgeLoading(false);
   }
