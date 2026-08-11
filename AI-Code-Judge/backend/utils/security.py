@@ -7,6 +7,7 @@ from functools import wraps
 from flask import request, jsonify
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 
+from database.database import db
 from backend.models.user import User
 
 
@@ -26,7 +27,7 @@ def jwt_required_optional(f):
         try:
             verify_jwt_in_request(optional=True)
             user_id = get_jwt_identity()
-            request.current_user = User.query.get(user_id) if user_id else None
+            request.current_user = db.session.get(User, int(user_id)) if user_id else None
         except Exception:
             request.current_user = None
         return f(*args, **kwargs)
@@ -40,7 +41,7 @@ def admin_required(f):
         try:
             verify_jwt_in_request()
             user_id = get_jwt_identity()
-            user = User.query.get(user_id)
+            user = db.session.get(User, int(user_id))
             if not user or not user.is_admin:
                 return jsonify({"error": "Admin access required"}), 403
             request.current_user = user

@@ -532,18 +532,8 @@ compareModal?.addEventListener('click', e => {
   if (e.target === compareModal) compareModal.classList.remove('open');
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function sevBadgeClass(sev) {
-  return { high: 'red', medium: 'yellow', low: 'blue', info: 'purple' }[sev] || 'purple';
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
-applyFilters();
+if (Auth.requireLogin()) {
+  applyFilters();
+}

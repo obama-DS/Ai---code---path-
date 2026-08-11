@@ -313,10 +313,6 @@ function renderIssueList(listId, badgeId, items, type) {
   });
 }
 
-function sevBadgeClass(sev) {
-  return { high: 'red', medium: 'yellow', low: 'blue', info: 'purple' }[sev] || 'purple';
-}
-
 // ─── Save button ──────────────────────────────────────────────────────────────
 
 document.getElementById('save-result-btn')?.addEventListener('click', () => {
@@ -349,12 +345,6 @@ function hideJudgeError() {
 function hideResults() {
   document.getElementById('results-panel').classList.remove('visible');
   document.getElementById('placeholder-panel').style.display = '';
-}
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 // ─── Default code snippets ────────────────────────────────────────────────────

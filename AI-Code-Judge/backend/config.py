@@ -8,6 +8,23 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def _resolve_db_uri(uri: str) -> str:
+    """
+    Resolve relative sqlite:/// paths against the project base directory.
+
+    Flask-SQLAlchemy 3.x resolves relative SQLite paths against
+    ``app.instance_path`` instead of the working directory, which breaks
+    ``DATABASE_URL=sqlite:///database/judge.db``. Normalising here makes the
+    app start from any working directory.
+    """
+    prefix = "sqlite:///"
+    if uri.startswith(prefix) and not uri.startswith("sqlite:////"):
+        rel = uri[len(prefix):]
+        if not Path(rel).is_absolute():
+            return f"{prefix}{(BASE_DIR / rel).as_posix()}"
+    return uri
+
+
 class Config:
     """Base configuration shared by all environments."""
 
@@ -16,10 +33,10 @@ class Config:
     JSON_SORT_KEYS: bool = False
 
     # Database
-    SQLALCHEMY_DATABASE_URI: str = os.getenv(
+    SQLALCHEMY_DATABASE_URI: str = _resolve_db_uri(os.getenv(
         "DATABASE_URL",
-        f"sqlite:///{BASE_DIR / 'database' / 'judge.db'}"
-    )
+        f"sqlite:///{(BASE_DIR / 'database' / 'judge.db').as_posix()}"
+    ))
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
     # JWT

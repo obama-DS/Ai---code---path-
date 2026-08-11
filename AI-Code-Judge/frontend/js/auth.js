@@ -10,8 +10,7 @@
   if (!pages.includes(current)) return;
 
   try {
-    const res = await fetch(`${API_BASE}/api/health`, { signal: AbortSignal.timeout(3000) });
-    if (!res.ok) throw new Error();
+    await Api.get('/api/health');
     // Backend is up — nothing to do
   } catch {
     const warn = document.createElement('div');
@@ -22,6 +21,12 @@
     if (card) card.insertBefore(warn, card.firstChild);
   }
 })();
+
+// ─── Redirect already-logged-in users ─────────────────────────────────────────
+// Allow staying on the page to switch accounts via login.html?switch=1
+if (Auth.isLoggedIn() && !new URLSearchParams(location.search).has('switch')) {
+  location.href = nextPage('dashboard.html');
+}
 
 // ─── Password toggle ──────────────────────────────────────────────────────────
 
@@ -97,11 +102,13 @@ if (loginForm) {
       const data = await Api.post('/api/auth/login', { email, password });
       Storage.set('user', data.user);
       Storage.set('token', data.token);
+      setLoading(btn, false, 'Sign In');
       showToast('Welcome back!', 'success');
-      setTimeout(() => { location.href = 'dashboard.html'; }, 800);
+      const dest = nextPage('dashboard.html');
+      setTimeout(() => { location.href = dest; }, 600);
     } catch (err) {
       // Distinguish network errors from API errors
-      const msg = err.message.startsWith('Failed to fetch')
+      const msg = err.network
         ? 'Cannot reach the server. Make sure Flask is running on port 5000.'
         : (err.message || 'Invalid email or password.');
       errMsg.textContent = msg;
@@ -156,10 +163,12 @@ if (registerForm) {
       });
       Storage.set('user', data.user);
       Storage.set('token', data.token);
+      setLoading(btn, false, 'Create Account');
       showToast('Account created! Welcome 🎉', 'success');
-      setTimeout(() => { location.href = 'judge.html'; }, 800);
+      const dest = nextPage('judge.html');
+      setTimeout(() => { location.href = dest; }, 600);
     } catch (err) {
-      const msg = err.message.startsWith('Failed to fetch')
+      const msg = err.network
         ? 'Cannot reach the server. Make sure Flask is running on port 5000.'
         : (err.message || 'Registration failed. Try again.');
       errMsg.textContent = msg;

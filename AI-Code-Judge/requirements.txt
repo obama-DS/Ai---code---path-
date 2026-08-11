@@ -7,7 +7,9 @@ python-dotenv==1.0.1
 
 # ─── Database ────────────────────────────────────────────────────────────────
 flask-sqlalchemy==3.1.1
-sqlalchemy==2.0.30
+# 2.0.36+ required: earlier 2.0.x pins crash on Python 3.13/3.14
+# (FastIntFlag "__firstlineno__" symbol conflict).
+sqlalchemy>=2.0.36,<2.1
 
 # ─── Auth ────────────────────────────────────────────────────────────────────
 flask-jwt-extended==4.6.0
@@ -17,6 +19,11 @@ email-validator==2.1.1
 # ─── AI providers ────────────────────────────────────────────────────────────
 openai==1.30.1
 anthropic==0.28.0
+# httpx 0.28+ removed the `proxies` kwarg, breaking openai 1.x client creation.
+httpx==0.27.2
+
+# ─── HTTP client (GitHub API) ────────────────────────────────────────────────
+requests==2.32.3
 
 # ─── Rate limiting ────────────────────────────────────────────────────────────
 flask-limiter==3.6.0

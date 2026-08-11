@@ -11,10 +11,10 @@ from backend.models.judgment import Judgment
 stats_bp = Blueprint("stats", __name__)
 
 
-@stats_bp.get("/")
+@stats_bp.get("/", strict_slashes=False)
 @jwt_required()
 def get_stats():
-    user_id   = get_jwt_identity()
+    user_id   = int(get_jwt_identity())
     judgments = (
         Judgment.query
         .filter_by(user_id=user_id)

@@ -92,7 +92,7 @@ def list_users():
 @admin_required
 def delete_user(user_id):
     """Delete a user and all their data."""
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
     if user.is_admin:
@@ -105,7 +105,7 @@ def delete_user(user_id):
 @admin_bp.post("/users/<int:user_id>/make-admin")
 @admin_required
 def make_admin(user_id):
-    user = User.query.get(user_id)
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({"error": "User not found"}), 404
     user.is_admin = True

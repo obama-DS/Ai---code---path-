@@ -60,7 +60,7 @@ function renderResults(data) {
     item.className = `file-item score-${scoreClass(f.score)}`;
     item.innerHTML = `
       <span class="file-lang">${langIcon(f.language)}</span>
-      <span class="file-path">${escHtml(f.path)}</span>
+      <span class="file-path">${escapeHtml(f.path)}</span>
       <span class="file-score" style="color:${scoreColor(f.score)}">${f.score}</span>
       <span class="badge badge-${scoreClass(f.score) === 'high' ? 'green' : scoreClass(f.score) === 'mid' ? 'yellow' : 'red'}" style="font-size:0.7rem;">/100</span>
     `;
@@ -73,7 +73,7 @@ function renderResults(data) {
   (data.top_issues || []).forEach(issue => {
     const d = document.createElement('div');
     d.style.cssText = 'display:flex;justify-content:space-between;padding:7px 10px;background:var(--bg-input);border-radius:var(--radius);font-size:0.83rem;';
-    d.innerHTML = `<span style="color:var(--text-secondary)">${escHtml(issue.title)}</span><span class="mono" style="color:var(--text-muted)">${issue.count}×</span>`;
+    d.innerHTML = `<span style="color:var(--text-secondary)">${escapeHtml(issue.title)}</span><span class="mono" style="color:var(--text-muted)">${issue.count}×</span>`;
     topList.appendChild(d);
   });
   if (!data.top_issues?.length) {
@@ -176,7 +176,6 @@ function renderCategoryAverages(files) {
 function el(id)         { return document.getElementById(id); }
 function show(id)       { el(id)?.classList.remove('hidden'); }
 function hide(id)       { el(id)?.classList.add('hidden'); }
-function escHtml(str)   { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function setLoading(on, msg = '') {
   analyseBtn.disabled = on;

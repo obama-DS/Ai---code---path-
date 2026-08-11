@@ -10,10 +10,10 @@ from backend.models.judgment import Judgment
 history_bp = Blueprint("history", __name__)
 
 
-@history_bp.get("/")
+@history_bp.get("/", strict_slashes=False)
 @jwt_required()
 def get_history():
-    user_id  = get_jwt_identity()
+    user_id  = int(get_jwt_identity())
     page     = request.args.get("page",     1,    type=int)
     per_page = request.args.get("per_page", 20,   type=int)
     language = request.args.get("language", None)
@@ -37,7 +37,7 @@ def get_history():
 @history_bp.get("/<int:judgment_id>")
 @jwt_required()
 def get_judgment(judgment_id):
-    user_id  = get_jwt_identity()
+    user_id  = int(get_jwt_identity())
     judgment = Judgment.query.filter_by(id=judgment_id, user_id=user_id).first()
     if not judgment:
         return jsonify({"error": "Judgment not found"}), 404
@@ -47,7 +47,7 @@ def get_judgment(judgment_id):
 @history_bp.delete("/<int:judgment_id>")
 @jwt_required()
 def delete_judgment(judgment_id):
-    user_id  = get_jwt_identity()
+    user_id  = int(get_jwt_identity())
     judgment = Judgment.query.filter_by(id=judgment_id, user_id=user_id).first()
     if not judgment:
         return jsonify({"error": "Judgment not found"}), 404

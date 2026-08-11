@@ -379,21 +379,15 @@ function renderHeatmap() {
   }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
-renderStats();
-initScoreChart(7);
-initCategoryChart();
-renderRecentHistory();
-renderLanguageStats();
-renderCommonProblems();
-renderInsights();
-renderHeatmap();
+if (Auth.requireLogin()) {
+  renderStats();
+  initScoreChart(7);
+  initCategoryChart();
+  renderRecentHistory();
+  renderLanguageStats();
+  renderCommonProblems();
+  renderInsights();
+  renderHeatmap();
+}

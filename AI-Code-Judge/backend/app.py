@@ -2,15 +2,24 @@
 app.py — Flask application factory and entry point.
 
 Run:
-    python backend/app.py
+    python backend/app.py          (from the project root)
+    python -m backend.app
 """
 import os
+import sys
 from pathlib import Path
+
+# Running `python backend/app.py` puts the script's directory on sys.path, not
+# the project root. Add the root so `from backend...` / `from database...`
+# imports resolve regardless of how the app is launched.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from dotenv import load_dotenv
 
 # Load .env before anything else
-load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+load_dotenv(PROJECT_ROOT / ".env")
 
 from flask import Flask, jsonify
 from flask_cors import CORS
